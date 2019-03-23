@@ -3,7 +3,6 @@
 %Section-01
 %21302686
 %Date: 24.03.2019
-
 format compact
 
 delimiterIn = ',';
@@ -49,9 +48,6 @@ positiveArray = zeros(sizeVocab);
 negativeArray = zeros(sizeVocab);
 neutralArray = zeros(sizeVocab);
 
-numberOfPositives = numberOfPositives + sizeVocab; 
-numberOfNegatives = numberOfNegatives + sizeVocab;
-numberOfNeutral = numberOfNeutral + sizeVocab;
 numCols = size(train_labels,1); % # of tweets
 
 for i=1:sizeVocab
@@ -76,9 +72,9 @@ mleNegative = zeros(sizeVocab);
 mleNeutral = zeros(sizeVocab);
 
 for i=1:sizeVocab    
-    mlePositive = float((mlePositive(i) + 1) ./ numberOfPositives);
-    mleNegative = float((mleNegative(i) + 1) ./ numberOfNegatives);
-    mleNeutral = float((mleNeutral(i) + 1) ./ numberOfNeutral);
+    mlePositive(i) = double((mlePositive(i) + 1) / numberOfPositives);
+    mleNegative(i) = double((mleNegative(i) + 1) / numberOfNegatives);
+    mleNeutral(i) = double((mleNeutral(i) + 1) / numberOfNeutral);
     
     if mlePositive(i) ~= 0
         mlePositive(i) = log(mlePositive(i));
@@ -94,30 +90,29 @@ for i=1:sizeVocab
 end
 
 numberOfCorrectPrediction = 0;
-numberOfWrongPrediction = 0;
 test_tweets = size(test_features,1);
 
 for i=1:test_tweets
     
-    mleTestPositive = float(0);
-    mleTestNegative = float(0);
-    mleTestNeutral = float(0);
+    mleTestPositive = double(0);
+    mleTestNegative = double(0);
+    mleTestNeutral = double(0);
     
     for j=1:sizeVocab
-        mleTestNegative = mleTestNegative + float(mleNegative(j) * test_features(i,j));
-        mleTestPositive = mleTestPositive + float(mlePositive(j) * test_features(i,j));
-        mleTestNeutral = mleTestNeutral + float(mleNeutral(j)*test_features(i,j));
+        mleTestNegative = mleTestNegative + double(mleNegative(j) * test_features(i,j));
+        mleTestPositive = mleTestPositive + double(mlePositive(j) * test_features(i,j));
+        mleTestNeutral = mleTestNeutral + double(mleNeutral(j)*test_features(i,j));
     end
 
-    predictNegative = log(float(numberOfNegatives / numberOfTweets)) + mleTestNegative;
-    predictPositive = log(float(numberOfPositives /numberOfTweets)) + mleTestPositive;
-    predictNeutral = log(float(numberOfNeutral/numberOfTweets)) + mleTestNeutral;
+    predictNegative = log(double(numberOfNegatives / numberOfTweets)) + mleTestNegative;
+    predictPositive = log(double(numberOfPositives /numberOfTweets)) + mleTestPositive;
+    predictNeutral = log(double(numberOfNeutral/numberOfTweets)) + mleTestNeutral;
     
-    if predictNegative > predictPositive && predictNegative>predictionNeutral
+    if predictNegative > predictPositive && predictNegative>predictNeutral
         predict = 'negative';
     end
     
-    if predictPositive > predictNegative && predictPositive>predictionNeutral
+    if predictPositive > predictNegative && predictPositive>predictNeutral
         predict = 'positive';
     end
     
@@ -125,7 +120,7 @@ for i=1:test_tweets
         predict = 'neutral';
     end
     
-    if predict == testlabels(i)
+    if strcmp(predict, test_labels(i))
        numberOfCorrectPrediction = numberOfCorrectPrediction + 1;
     end
             
@@ -133,16 +128,10 @@ end
 
 sizeTestFeatures = size(test_features,1);
 
-accuracy = float(numberOfCorrectPrediction/sizeTestFeatures);
+accuracy = double(numberOfCorrectPrediction/sizeTestFeatures);
+numberOfWrongPrediction = sizeTestFeatures - numberOfCorrectPrediction;
 
-disp("Accuracy -> " + str(accuracy));
-disp("False predictions -> " + str(sizeTestFeatures - numberOfCorrectPrediction));
-    
-
-
-
-
-
-
+disp("Accuracy -> " + accuracy);
+disp("False predictions -> " + numberOfWrongPrediction);
 
 
