@@ -25,9 +25,13 @@ test_labels = importdata('question-4-test-labels.csv', delimiterIn);
 numberOfTweets = size(train_features,1);
 disp(numberOfTweets);%it obtained 11712 as number of tweets 
 
+
+%Next step is to count the positive, neutral and negative tweets.
+
 numberOfPositives = 0;
 numberOfNeutral = 0;
 numberOfNegatives = 0;
+
 
 for i=1:numberOfTweets
     if strcmp(train_labels(i),"positive")
@@ -44,27 +48,58 @@ for i=1:numberOfTweets
         
 end
 
-positiveArray = zeros(sizeVocab);
-negativeArray = zeros(sizeVocab);
-neutralArray = zeros(sizeVocab);
+disp(numberOfPositives);
+disp(numberOfNegatives);
+disp(numberOfNeutral);
+
+
+positiveWordArray = zeros(sizeVocab);
+negativeWordArray = zeros(sizeVocab);
+neutralWordArray = zeros(sizeVocab);
 
 numCols = size(train_labels,1); % # of tweets
 
+%next step is to compute 
+%j j y=neutral estimates the probability that a particular word in a neutral tweet will be the j-th word
+%of the vocabulary, P(Xj j Y = neutral)
+%j j y=positive estimates the probability that a particular word in a positive tweet will be the j-th word
+%of the vocabulary, P(Xj j Y = positive)
+%j j y=negative estimates the probability that a particular word in a negative tweet will be the j-th word
+%of the vocabulary, P(Xj j Y = negative)
+
 for i=1:sizeVocab
     for j=1:numberOfTweets
-        if strcmp(train_labels(i),"positive")
-            %this holds frequencies of each vocab words in positive tweets
-            positiveArray(i) = positiveArray(i) + train_features(j,i);
+        if strcmp(train_labels(j),"positive")
+            %this holds frequencies of words in each positive tweet
+            positiveWordArray(i) = positiveWordArray(i) + train_features(j,i);
+           
         end
-        if strcmp(train_labels(i),"negative")
-            %this holds frequencies of each vocab words in negative tweets
-            negativeArray(i) = negativeArray(i) + train_features(j,i);
+        if strcmp(train_labels(j),"negative")
+            %this holds frequencies of  words in each negative tweet
+            negativeWordArray(i) = negativeWordArray(i) + train_features(j,i);
+           
         end
-        if strcmp(train_labels(i),"neutral")
-            %this holds frequencies of each vocab words in neutral tweets
-            neutralArray(i) = neutralArray(i) + train_features(j,i);
+        if strcmp(train_labels(j),"neutral")
+            %this holds frequencies of  words in each neutral tweet.
+            neutralWordArray(i) = neutralWordArray(i) + train_features(j,i);
+           
         end
     end
+end
+sumPositive = 0;
+sumNegative = 0;
+sumNeutral= 0;
+
+for i=1:sizeVocab
+    sumPositive = sumPositive + positiveWordArray(i);
+end
+
+for i=1:sizeVocab
+    sumNegative =  sumNegative + negativeWordArray(i);
+end
+
+for i=1:sizeVocab
+    sumNeutral =  sumNeutral + neutralWordArray(i);
 end
 
 mlePositive = zeros(sizeVocab);
@@ -72,13 +107,13 @@ mleNegative = zeros(sizeVocab);
 mleNeutral = zeros(sizeVocab);
 
 for i=1:sizeVocab    
-    mlePositive(i) = double((mlePositive(i) + 1) / numberOfPositives);
-    mleNegative(i) = double((mleNegative(i) + 1) / numberOfNegatives);
-    mleNeutral(i) = double((mleNeutral(i) + 1) / numberOfNeutral);
+    mlePositive(i) = double(positiveWordArray(i) / sumPositive);
+    mleNegative(i) = double(negativeWordArray(i)/ sumNegative);
+    mleNeutral(i) = double(neutralWordArray(i) / sumNeutral);
     
     if mlePositive(i) ~= 0
         mlePositive(i) = log(mlePositive(i));
-    end
+    end    
 
     if mleNegative(i) ~= 0
         mleNegative(i) = log(mleNegative(i));
@@ -87,6 +122,8 @@ for i=1:sizeVocab
     if mleNeutral(i) ~= 0
        mleNeutral(i) = log(mleNeutral(i));
     end
+    
+      
 end
 
 numberOfCorrectPrediction = 0;
@@ -133,5 +170,7 @@ numberOfWrongPrediction = sizeTestFeatures - numberOfCorrectPrediction;
 
 disp("Accuracy -> " + accuracy);
 disp("False predictions -> " + numberOfWrongPrediction);
+
+
 
 
