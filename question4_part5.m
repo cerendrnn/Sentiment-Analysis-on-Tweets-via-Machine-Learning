@@ -1,5 +1,5 @@
 %CS464 Introduction to Machine Learning Homework-01
-%Author: Aybüke Ceren Duran
+%Author: AybÃ¼ke Ceren Duran
 %Section-01
 %21302686
 %Date: 24.03.2019
@@ -172,13 +172,3 @@ numberOfWrongPrediction = sizeTestFeatures - numberOfCorrectPrediction;
 
 disp("Accuracy -> " + accuracy);
 disp("False predictions -> " + numberOfWrongPrediction);
-
-
-
-
-
-
-
-
-
-
