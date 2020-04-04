@@ -1,5 +1,5 @@
 %CS464 Introduction to Machine Learning Homework-01
-%Author: Aybüke Ceren Duran
+%Author: AybÃ¼ke Ceren Duran
 %Section-01
 %21302686
 %Date: 24.03.2019
@@ -28,9 +28,4 @@ for i=1:sizeVocab
        disp('For tweet i  most commonly used 20 words are: ');
    end
 end
-
-
-
-
-
     
